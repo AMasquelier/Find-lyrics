@@ -66,18 +66,20 @@ HWND FindSpotify()
 }
 
 
-
-DWORD pID;
-
 int main()
 {
+	FindSpotify();
+	HWND hwnd = GetForegroundWindow();
+	ShowWindow(hwnd, SW_HIDE);
+	
 	Clock framerate_timer; framerate_timer.start();
 	double framerate = 60.0;
 	char wnd_title[256];
 	string title, last_title;
 	bool ls = false, s = false;
 	bool open_genius = false;
-	while (true)
+	bool Keep = true;
+	while (Keep)
 	{
 		if (framerate_timer.duration() >= 1000000.0 / framerate)
 		{
@@ -93,7 +95,9 @@ int main()
 				framerate = 20.0;
 				// Event
 				ls = s;
-				if (GetKeyState(VK_F2) & 0x8000)
+				if ((GetKeyState(VK_CONTROL) & 0x8000) && (GetKeyState(VK_F2) & 0x8000))
+					Keep = false;
+				else if (GetKeyState(VK_F2) & 0x8000)
 					s = true;
 				else
 					s = false;
@@ -109,13 +113,13 @@ int main()
 				if (string(wnd_title) != last_title && title != "Spotify")
 				{
 					title = wnd_title;
-					system("cls");
-					cout << title << endl;
+					//system("cls");
+					//cout << title << endl;
 				}
 				else if (string(wnd_title) != last_title && title == "Spotify")
 				{
-					system("cls");
-					cout << wnd_title << endl;
+					//system("cls");
+					//cout << wnd_title << endl;
 				}
 			}
 			
