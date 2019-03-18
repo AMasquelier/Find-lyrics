@@ -41,6 +41,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 		if (filename.find("Spotify.exe") != string::npos)
 		{
 			string Title = title;
+			
 			if (Title != "" && string(class_name) == "Chrome_WidgetWin_0")
 			{
 				spotify_hwnd = hwnd;
@@ -105,18 +106,22 @@ int main()
 				if (wnd_title != nullptr) last_title = wnd_title;
 				GetWindowText(spotify_hwnd, wnd_title, sizeof(wnd_title));
 
-				if (s && !ls && title != "Spotify") // If pushed f2
+
+				if (string(wnd_title).length() == 0) // If spotify is closed
+					spotify_hwnd = NULL;
+
+				if (s && !ls && title != "") // If pushed f2
 				{
 					system(Makecmd(title).c_str());
 					open_genius = false;
 				}
-				if (string(wnd_title) != last_title && title != "Spotify")
+				if (string(wnd_title) != last_title && string(wnd_title) != "Spotify")
 				{
 					title = wnd_title;
 					//system("cls");
 					//cout << title << endl;
 				}
-				else if (string(wnd_title) != last_title && title == "Spotify")
+				else if (string(wnd_title) != last_title && string(wnd_title) == "Spotify")
 				{
 					//system("cls");
 					//cout << wnd_title << endl;
