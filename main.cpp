@@ -28,7 +28,6 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 	GetClassName(hwnd, class_name, sizeof(class_name));
 	GetWindowText(hwnd, title, sizeof(title));
 
-	// get process id based on hwnd
 	GetWindowThreadProcessId(hwnd, &dwProcessId);
 
 	HANDLE proc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, dwProcessId);
@@ -45,9 +44,12 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 			if (Title != "" && string(class_name) == "Chrome_WidgetWin_0")
 			{
 				spotify_hwnd = hwnd;
+				delete path;
+				CloseHandle(proc);
 				return FALSE;
 			}
 		}
+		delete path;
 		CloseHandle(proc);
 	}
 
@@ -82,9 +84,13 @@ int main()
 			framerate_timer.start();
 			// Search Spotify window
 			if (spotify_hwnd == NULL)
+			{
+				framerate = 1.0;
 				FindSpotify();
+			}
 			else
 			{
+				framerate = 20.0;
 				// Event
 				ls = s;
 				if (GetKeyState(VK_F2) & 0x8000)
@@ -94,16 +100,22 @@ int main()
 
 				if (wnd_title != nullptr) last_title = wnd_title;
 				GetWindowText(spotify_hwnd, wnd_title, sizeof(wnd_title));
-				title = wnd_title;
-				if (s && !ls) // If pushed f2
+
+				if (s && !ls && title != "Spotify") // If pushed f2
 				{
 					system(Makecmd(title).c_str());
 					open_genius = false;
 				}
-				if (title != last_title && title != "Spotify")
+				if (string(wnd_title) != last_title && title != "Spotify")
 				{
+					title = wnd_title;
 					system("cls");
 					cout << title << endl;
+				}
+				else if (string(wnd_title) != last_title && title == "Spotify")
+				{
+					system("cls");
+					cout << wnd_title << endl;
 				}
 			}
 			
