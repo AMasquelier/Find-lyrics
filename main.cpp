@@ -16,13 +16,15 @@ string Makecmd(string title)
 	{
 		if (title[i] == ' ') cmd += '-';
 		else if (title[i] == '-') cmd.pop_back();
-		else if (title[i] == '!' || title[i] == '.' || title[i] == '?' || title[i] == '\'' || title[i] == '?' || title[i] == ',' || title[i] == ';');
+		else if (title[i] == '!' || title[i] == '.' || title[i] == '?' || title[i] == '\'' || title[i] == '?' || title[i] == ',' || title[i] == ';' || title[i] == '(' || title[i] == ')');
 		else cmd += title[i];
 	}
 	return ("start https://genius.com/" +  cmd + "-lyrics");
 }
 
 HWND spotify_hwnd;
+bool already_open = false;
+int pcount = 0;
 
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 {
@@ -36,22 +38,24 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 
 	HANDLE proc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, dwProcessId);
 	
+	
 	if (proc)
 	{
 		LPSTR path = new CHAR[MAX_PATH];
 		DWORD charsCarried = MAX_PATH;
 		BOOL RES = QueryFullProcessImageNameA(proc, NULL, path, &charsCarried);
 		string filename = path;
-		if (filename.find("Spotify.exe") != string::npos)
+		if (string(title) == "Genius") pcount++;
+		if (pcount > 1) already_open = true;
+		
+
+		if (spotify_hwnd == NULL && filename.find("Spotify.exe") != string::npos)
 		{
 			string Title = title;
 			
 			if (Title != "" && string(class_name) == "Chrome_WidgetWin_0")
 			{
 				spotify_hwnd = hwnd;
-				delete path;
-				CloseHandle(proc);
-				return FALSE;
 			}
 		}
 		delete path;
@@ -73,17 +77,19 @@ HWND FindSpotify()
 
 int main()
 {
-	FindSpotify();
-	HWND hwnd = GetForegroundWindow();
-	ShowWindow(hwnd, SW_HIDE);
 	
+	HWND hwnd = GetForegroundWindow();
+	SetWindowTextA(hwnd, "Genius");
+	ShowWindow(hwnd, SW_HIDE);
+	FindSpotify();
 	Clock framerate_timer; framerate_timer.start();
 	double framerate = 60.0;
 	char wnd_title[256];
 	string title, last_title;
 	bool ls = false, s = false;
 	bool open_genius = false;
-	bool Keep = true;
+	bool Keep = !already_open;
+
 	while (Keep)
 	{
 		if (framerate_timer.duration() >= 1000000.0 / framerate)
