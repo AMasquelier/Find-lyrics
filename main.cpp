@@ -8,11 +8,15 @@ using namespace std;
 string Makecmd(string title)
 {
 	string cmd = "";
-	for (int i = 0; i < title.length(); i++)
+	int last = title.length();
+	if (title.find(" - ") != title.rfind(" - "))
+		last = title.rfind(" - ");
+
+	for (int i = 0; i < last; i++)
 	{
 		if (title[i] == ' ') cmd += '-';
 		else if (title[i] == '-') cmd.pop_back();
-		else if (title[i] == '!' || title[i] == '.' || title[i] == '?' || title[i] == '\'' || title[i] == '?');
+		else if (title[i] == '!' || title[i] == '.' || title[i] == '?' || title[i] == '\'' || title[i] == '?' || title[i] == ',' || title[i] == ';');
 		else cmd += title[i];
 	}
 	return ("start https://genius.com/" +  cmd + "-lyrics");
